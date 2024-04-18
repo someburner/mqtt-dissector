@@ -263,7 +263,7 @@ https://www.tcpdump.org/manpages/pcap-filter.7.html
 #define DNS_PORT_FILTER  "(udp and dst port 53)"
 #define BOTH_PORT_FILTER "(" MQTT_PORT_FILTER " || " DNS_PORT_FILTER ")"
 
-int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads)
+int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads, bool partials)
 {
     std::string filter = "(";
     if (en_dns) {
@@ -311,8 +311,15 @@ int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads)
         /* Now construct the stream follower */
         StreamFollower follower;
         follower.new_stream_callback(&on_new_connection);
-        /* also process already running TCP streams */
-        follower.follow_partial_streams( true );
+
+        // process already running TCP streams, if enabled
+        if (partials) {
+            follower.follow_partial_streams(true);
+            std::cout << "Partials enabled\n";
+        } else {
+            follower.follow_partial_streams(false);
+            std::cout << "Partials disabled\n";
+        }
 
         /* Capture. Every time there's a new packet.. */
         s1.sniff_loop([&](PDU& pdu) {
@@ -327,7 +334,7 @@ int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads)
         logerror("Error: %s", ex.what() );
     }
 
-    /* end of main() */
+    return 0;
 }
 
 bool validate_iface(std::string& check_if) {

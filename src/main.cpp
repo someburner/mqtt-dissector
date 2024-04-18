@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
     bool show_help = false;
     bool en_logging = false;
     bool en_dns = false;
+    bool dis_partials = false;
     bool en_mac_filter = false;
     bool en_ip_filter = false;
     bool dump_payloads = false;
@@ -40,7 +41,8 @@ int main(int argc, char* argv[]) {
         clipp::option("-i",   "--iface")  & clipp::value("interface", iface),
         clipp::option("-d",   "--daemonize").set(daemonize).doc("run as daemon"),
         clipp::option("-l",   "--logpath").set(en_logging).doc("/path/to/logs") & clipp::value("logpath", logpath),
-        clipp::option("-dns",  "--en-dns").set(en_dns).doc("Enable DNS capture"),
+        clipp::option("-dns", "--en-dns").set(en_dns).doc("Enable DNS capture"),
+        clipp::option("-dp",  "--disable-partials").set(dis_partials).doc("ignore partial streams"),
         clipp::option("-fm",  "--filter-mac").set(en_mac_filter).doc("MAC filter") & clipp::value("MAC", mac_filter),
         clipp::option("-fi",  "--filter-ip").set(en_ip_filter).doc("IP filter") & clipp::value("IP", ip_filter),
         clipp::option("-p",   "--payload").set(dump_payloads).doc("Dump payloads"),
@@ -120,7 +122,7 @@ int main(int argc, char* argv[]) {
 
     try {
         logdebug("dissect begin..");
-        int ret = dissect( iface.c_str(), flist, en_dns, dump_payloads );
+        int ret = dissect(iface.c_str(), flist, en_dns, dump_payloads, !dis_partials);
     }
     catch (std::exception& ex) {
         logerror("Error: %s", ex.what() );

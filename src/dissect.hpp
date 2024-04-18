@@ -31,7 +31,7 @@ inline void print_buf_hex(uint8_t * b, unsigned len) {
     for (int i=0; i<len; i++) { printf("%02X ", b[i]); }
 }
 
-int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads);
+int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads, bool partials);
 bool validate_iface(std::string& check_if);
 void dissect_help(void);
 
