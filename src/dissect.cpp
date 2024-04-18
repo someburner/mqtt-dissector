@@ -30,6 +30,7 @@
 /* dump options */
 #include "options.hpp"
 
+using std::chrono::system_clock;
 using Tins::Sniffer;
 using Tins::SnifferConfiguration;
 using Tins::PDU;
@@ -71,6 +72,10 @@ void enable_logging(std::string& path) {
 
 /* Forward declarations */
 static bool handle_mqtt_pkt( bool isClient, uint8_t * data, size_t pktlen);
+
+static uint64_t epoch_secs_now() {
+    return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1000);
+}
 
 void on_client_data(Stream& stream)
 {
@@ -155,9 +160,16 @@ static void addRmStream(Stream& s, bool adding) {
 void on_connection_closed(Stream& stream) {
     addRmStream(stream, false);
     logwarn("[-] Connection closed"); //  TU::getStreamIDStr(stream).c_str()
+
+    UserData& u = stream.user_data<UserData>();
+    uint64_t delta = epoch_secs_now() - u.GetStartSecs();
+    std::cout << "conn lasted: " << delta << " seconds\n";
 }
 
 void on_new_connection(Stream& stream) {
+    UserData& u = stream.user_data<UserData>();
+    u.SetStartSecs(epoch_secs_now());
+
     /*Disables auto-deleting the client's data after the callback is executed */
     //stream.auto_cleanup_client_data(true);
     /* Same thing for the server's data */
