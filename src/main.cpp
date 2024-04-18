@@ -20,16 +20,17 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    // options to pass
+    OPTIONS_T opts;
+    memset(&opts, 0, sizeof(opts));
+
     bool print_version = false;
     bool daemonize = false;
     bool show_ifs = false;
     bool show_help = false;
     bool en_logging = false;
-    bool en_dns = false;
-    bool dis_partials = false;
     bool en_mac_filter = false;
     bool en_ip_filter = false;
-    bool dump_payloads = false;
     std::string iface = "invalid";
     static std::string pidfile;
     static std::string logpath;
@@ -40,12 +41,16 @@ int main(int argc, char* argv[]) {
     auto cli = (
         clipp::option("-i",   "--iface")  & clipp::value("interface", iface),
         clipp::option("-d",   "--daemonize").set(daemonize).doc("run as daemon"),
-        clipp::option("-l",   "--logpath").set(en_logging).doc("/path/to/logs") & clipp::value("logpath", logpath),
-        clipp::option("-dns", "--en-dns").set(en_dns).doc("Enable DNS capture"),
-        clipp::option("-dp",  "--disable-partials").set(dis_partials).doc("ignore partial streams"),
+        // filter settings
+        clipp::option("-dns", "--en-dns").set(opts.en_dns).doc("Enable DNS capture"),
+        clipp::option("-dp",  "--disable-partials").set(opts.dis_partials).doc("ignore partial streams"),
         clipp::option("-fm",  "--filter-mac").set(en_mac_filter).doc("MAC filter") & clipp::value("MAC", mac_filter),
         clipp::option("-fi",  "--filter-ip").set(en_ip_filter).doc("IP filter") & clipp::value("IP", ip_filter),
-        clipp::option("-p",   "--payload").set(dump_payloads).doc("Dump payloads"),
+        // output settings
+        clipp::option("-l",   "--logpath").set(en_logging).doc("/path/to/logs") & clipp::value("logpath", logpath),
+        clipp::option("-p",   "--payload").set(opts.dump_payloads).doc("Dump payloads"),
+        clipp::option("-t",   "--timestamps").set(opts.dump_stamps).doc("Dump timestamps"),
+        clipp::option("-td",  "--timedeltas").set(opts.dump_deltas).doc("Dump time deltas"),
         // clipp::option("-pid", "--pidfile") & clipp::value("pid file location (daemon)", pidfile),
         clipp::option("-v",   "--version").set(print_version).doc("print version and exit"),
         clipp::option("-h",   "--help").set(show_help).doc("Print help"),
@@ -122,7 +127,7 @@ int main(int argc, char* argv[]) {
 
     try {
         logdebug("dissect begin..");
-        int ret = dissect(iface.c_str(), flist, en_dns, dump_payloads, !dis_partials);
+        int ret = dissect(iface.c_str(), flist, opts);
     }
     catch (std::exception& ex) {
         logerror("Error: %s", ex.what() );

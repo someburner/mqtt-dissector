@@ -2,6 +2,8 @@
 #define DISSECT__hpp
 #include <vector>
 
+#include "options.hpp"
+
 enum {
     FILTER_INVALID_T,
     FILTER_MAC_T,
@@ -31,7 +33,7 @@ inline void print_buf_hex(uint8_t * b, unsigned len) {
     for (int i=0; i<len; i++) { printf("%02X ", b[i]); }
 }
 
-int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads, bool partials);
+int dissect(const char* iface, FilterList &flist, OPTIONS_T &opts);
 bool validate_iface(std::string& check_if);
 void dissect_help(void);
 

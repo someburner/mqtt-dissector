@@ -263,10 +263,10 @@ https://www.tcpdump.org/manpages/pcap-filter.7.html
 #define DNS_PORT_FILTER  "(udp and dst port 53)"
 #define BOTH_PORT_FILTER "(" MQTT_PORT_FILTER " || " DNS_PORT_FILTER ")"
 
-int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads, bool partials)
+int dissect(const char* iface, FilterList &flist, OPTIONS_T &opts)
 {
     std::string filter = "(";
-    if (en_dns) {
+    if (opts.en_dns) {
         filter += std::string(BOTH_PORT_FILTER);
     } else {
         filter += std::string(MQTT_PORT_FILTER);
@@ -297,7 +297,7 @@ int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads, bo
     filter += ")";
     logdebug("Filter string =\"%s\"", filter.c_str() );
 
-    MQTT::dump_payloads = payloads;
+    MQTT::dump_payloads = opts.dump_payloads;
 
     try {
         SnifferConfiguration c1;
@@ -313,12 +313,12 @@ int dissect(const char* iface, FilterList &flist, bool en_dns, bool payloads, bo
         follower.new_stream_callback(&on_new_connection);
 
         // process already running TCP streams, if enabled
-        if (partials) {
-            follower.follow_partial_streams(true);
-            std::cout << "Partials enabled\n";
-        } else {
+        if (opts.dis_partials) {
             follower.follow_partial_streams(false);
             std::cout << "Partials disabled\n";
+        } else {
+            follower.follow_partial_streams(true);
+            std::cout << "Partials enabled\n";
         }
 
         /* Capture. Every time there's a new packet.. */
