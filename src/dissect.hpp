@@ -55,7 +55,23 @@ public:
         if (isClient) {
             return _cur_client_secs - _prev_client_secs;
         } else {
-            _cur_server_secs - _prev_server_secs;
+            return _cur_server_secs - _prev_server_secs;
+        }
+    }
+
+    uint64_t GetCurSecs(bool isClient) {
+        if (isClient) {
+            return _cur_client_secs;
+        } else {
+            return _cur_server_secs;
+        }
+    }
+
+    uint64_t GetElapsedSecs(bool isClient) {
+        if (isClient) {
+            return _cur_client_secs - _start_secs;
+        } else {
+            return _cur_server_secs - _start_secs;
         }
     }
 

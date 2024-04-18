@@ -255,8 +255,12 @@ bool handle_mqtt_pkt(UserData& userData, bool isClient, uint8_t * pktbuf, size_t
         pkt.dumpId();
     }
 
-    // std::cout << "Addtl filters: \n";
-    printf(" [+%" PRIu64 "s]", userData.GetPktDelta(isClient));
+    if (gopts.dump_stamps) {
+        printf(" [t=%" PRIu64 "s]", userData.GetElapsedSecs(isClient));
+    }
+    if (gopts.dump_deltas) {
+        printf(" [+%" PRIu64 "s]", userData.GetPktDelta(isClient));
+    }
 
     printf("\n");
 
