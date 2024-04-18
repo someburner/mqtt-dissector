@@ -14,8 +14,7 @@ CXX       := g++
 THREADED  := -j2
 
 ### Flags
-BASEFLAGS =-pedantic -O2 -std=c++17 -D_REETRANT
-# BASEFLAGS +=-DTINS_STATIC
+BASEFLAGS := -pedantic -O2 -std=c++17 -D_REETRANT
 
 ### Libs
 LIBS := -ltins -lpcap -lpthread
