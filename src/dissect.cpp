@@ -111,7 +111,6 @@ void on_server_data(Stream& stream)
 {
     // get userdata to pass to parser
     UserData& u = stream.user_data<UserData>();
-    u.SetCurSecs(false);
 
     const Stream::payload_type& server_payload = stream.server_payload();
     size_t datalen = stream.server_payload().end() - stream.server_payload().begin();
@@ -123,6 +122,10 @@ void on_server_data(Stream& stream)
         c_paintf_wht_bld("0 len packet?\n");
         return;
     }
+
+    // dont update cursecs if pkt is invalid
+    u.SetCurSecs(false);
+
     // std::cout << TU::server_GetStreamIP(stream) << " >> " << TU::client_GetStreamIP(stream) << std::endl;
     // printf("\n data len = %d, datalen = %d\n", data.length(), datalen );
     handle_mqtt_pkt(u, false, (uint8_t*) data.c_str(), data.length());
