@@ -45,7 +45,7 @@ using Tins::TCPIP::Stream;
 typedef std::vector<Tins::Sniffer *> SnifferList;
 
 /* tins_utils - global list */
-extern std::unique_ptr<TU::IfaceInfo> ifinfo;
+std::unique_ptr<TU::IfaceInfo> ifinfo = std::make_unique<TU::IfaceInfo>();
 
 TU::ConnPairs cPairs;
 
@@ -367,12 +367,13 @@ int dissect(const char* iface, FilterList &flist, OPTIONS_T &opts)
 }
 
 bool validate_iface(std::string& check_if) {
-    if ( TU::ifinfo->valid_name(check_if) )
+    if (ifinfo->valid_name(check_if)) {
         return true;
+    }
     logwarn("invalid interface \"%s\" (run with -s for list)\n", check_if.c_str() );
     return false;
 }
 
 void dissect_help(void) {
-    TU::ifinfo->dump_shortlist();
+    ifinfo->dump_shortlist();
 }

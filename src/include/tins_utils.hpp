@@ -90,7 +90,7 @@ int ConnPairs::pop(std::size_t hash, char * info)
 class IfaceInfo {
 public:
     IfaceInfo() {
-        // std::cout << "Populating if info.." << std::endl;
+        std::cout << "Populating if info.." << std::endl;
         for (const NetworkInterface& iface : NetworkInterface::all()) {
             std::string name = iface.name();
             bool updown = iface.is_up();
@@ -122,8 +122,6 @@ public:
 private:
     std::vector<BasicInfo_t> _cur;
 };
-
-std::unique_ptr<TU::IfaceInfo> ifinfo = std::make_unique<TU::IfaceInfo>();
 
 inline void dump_if_list(void) {
     for (const NetworkInterface& iface : NetworkInterface::all()) {

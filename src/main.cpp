@@ -73,7 +73,6 @@ int main(int argc, char* argv[]) {
         }
         show_help = true;
     }
-    // const char * test = APP_NAME;
 
     if (show_help) {
         std::cout << make_man_page(cli, argv[0], cli_fmt)
@@ -133,17 +132,3 @@ int main(int argc, char* argv[]) {
         logerror("Error: %s", ex.what() );
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* EOF */
