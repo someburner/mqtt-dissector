@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstdarg>
 #include <iostream>
+#include <inttypes.h>
 
 #include "debug.h"
 
@@ -30,7 +31,6 @@
 /* dump options */
 #include "options.hpp"
 
-using std::chrono::system_clock;
 using Tins::Sniffer;
 using Tins::SnifferConfiguration;
 using Tins::PDU;
@@ -51,6 +51,7 @@ TU::ConnPairs cPairs;
 
 static bool colors_enabled = true;
 static bool log_redirect   = false;
+static OPTIONS_T gopts;
 
 #if LOGURU_EN
 #define LOGURU_IMPLEMENTATION 1
@@ -71,14 +72,14 @@ void enable_logging(std::string& path) {
 #endif /* LOGURU_EN */
 
 /* Forward declarations */
-static bool handle_mqtt_pkt( bool isClient, uint8_t * data, size_t pktlen);
-
-static uint64_t epoch_secs_now() {
-    return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1000);
-}
+static bool handle_mqtt_pkt(UserData& userData, bool isClient, uint8_t * data, size_t pktlen);
 
 void on_client_data(Stream& stream)
 {
+    // get userdata to pass to parser
+    UserData& u = stream.user_data<UserData>();
+    u.SetCurSecs(true);
+
     // client_addr_v4
     /* Construct a string out of the contents of the client's payload */
     const Stream::payload_type& client_payload = stream.client_payload();
@@ -88,7 +89,7 @@ void on_client_data(Stream& stream)
     c_paintf_cya_bld("CLIENT"); c_paintf_nrm(" >> ");
 
     // std::cout << TU::client_GetStreamIP(stream) << " >> " << TU::server_GetStreamIP(stream) << std::endl;
-    handle_mqtt_pkt( true, (uint8_t*) data.c_str(), data.length() );
+    handle_mqtt_pkt(u, true, (uint8_t*) data.c_str(), data.length());
 }
 
 /* TODO: turn into a single function that just uses arithmatic */
@@ -108,17 +109,23 @@ inline void paint_index(int index, char * s) {
 
 void on_server_data(Stream& stream)
 {
+    // get userdata to pass to parser
+    UserData& u = stream.user_data<UserData>();
+    u.SetCurSecs(false);
+
     const Stream::payload_type& server_payload = stream.server_payload();
     size_t datalen = stream.server_payload().end() - stream.server_payload().begin();
     std::string data(stream.server_payload().cbegin(), stream.server_payload().cend());
+
     c_paintf_blu_bld("SERVER"); c_paintf_nrm(" << ");
+
     if(!datalen) {
         c_paintf_wht_bld("0 len packet?\n");
         return;
     }
     // std::cout << TU::server_GetStreamIP(stream) << " >> " << TU::client_GetStreamIP(stream) << std::endl;
     // printf("\n data len = %d, datalen = %d\n", data.length(), datalen );
-    handle_mqtt_pkt( false, (uint8_t*) data.c_str(), data.length() );
+    handle_mqtt_pkt(u, false, (uint8_t*) data.c_str(), data.length());
 }
 
 static void addRmStream(Stream& s, bool adding) {
@@ -202,8 +209,7 @@ void on_new_connection(Stream& stream) {
     stream.stream_closed_callback(&on_connection_closed);
 }
 
-
-bool handle_mqtt_pkt(bool isClient, uint8_t * pktbuf, size_t pktlen)
+bool handle_mqtt_pkt(UserData& userData, bool isClient, uint8_t * pktbuf, size_t pktlen)
 {
     size_t nread = 0;
     int pos = 0;
@@ -249,6 +255,9 @@ bool handle_mqtt_pkt(bool isClient, uint8_t * pktbuf, size_t pktlen)
         pkt.dumpId();
     }
 
+    // std::cout << "Addtl filters: \n";
+    printf(" [+%" PRIu64 "s]", userData.GetPktDelta(isClient));
+
     printf("\n");
 
     return true;
@@ -277,6 +286,7 @@ https://www.tcpdump.org/manpages/pcap-filter.7.html
 
 int dissect(const char* iface, FilterList &flist, OPTIONS_T &opts)
 {
+    gopts = opts;
     std::string filter = "(";
     if (opts.en_dns) {
         filter += std::string(BOTH_PORT_FILTER);

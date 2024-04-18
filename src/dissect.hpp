@@ -1,8 +1,13 @@
 #ifndef DISSECT__hpp
 #define DISSECT__hpp
+#include <chrono>
 #include <vector>
 
 #include "options.hpp"
+
+inline uint64_t epoch_secs_now() {
+    return std::chrono::system_clock::now().time_since_epoch() / std::chrono::milliseconds(1000);
+}
 
 enum {
     FILTER_INVALID_T,
@@ -21,7 +26,8 @@ private:
     std::string client_id;
 
     uint64_t    _start_secs;
-    uint64_t    _last_msg_secs;
+    uint64_t    _prev_client_secs, _prev_server_secs;
+    uint64_t    _cur_client_secs, _cur_server_secs;
 
 public:
     UserData() {
@@ -31,8 +37,25 @@ public:
 
     void SetStartSecs(uint64_t epoch) {
         if (_start_secs == 0) {
-            _start_secs = epoch;
-            _last_msg_secs = epoch;
+            _start_secs = _cur_client_secs = epoch;
+        }
+    }
+
+    void SetCurSecs(bool isClient) {
+        if (isClient) {
+            _prev_client_secs = _cur_client_secs;
+            _cur_client_secs = epoch_secs_now();
+        } else {
+            _prev_server_secs = _cur_server_secs;
+            _cur_server_secs = epoch_secs_now();
+        }
+    }
+
+    uint64_t GetPktDelta(bool isClient) {
+        if (isClient) {
+            return _cur_client_secs - _prev_client_secs;
+        } else {
+            _cur_server_secs - _prev_server_secs;
         }
     }
 

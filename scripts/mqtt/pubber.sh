@@ -6,6 +6,7 @@ source creds.sh;
 CMD_BASE='mosquitto_pub -V mqttv311';
 PUB_REPEAT="9999";
 PUB_DELAY="2";
+MQTT_KEEPALIVE="60";
 
 # CID0="client0";
 CID0="client0-$(date +%s)";
@@ -25,8 +26,9 @@ fi
 
 ! [[ -z $COUNT ]] && PUB_REPEAT=$COUNT;
 ! [[ -z $INTERVAL ]] && PUB_DELAY=$INTERVAL;
+! [[ -z $KEEPALIVE ]] && MQTT_KEEPALIVE=$KEEPALIVE;
 
-CMD_TO_RUN="$CMD_TO_RUN --repeat $PUB_REPEAT --repeat-delay $PUB_DELAY";
+CMD_TO_RUN="$CMD_TO_RUN --repeat $PUB_REPEAT --repeat-delay $PUB_DELAY -k $MQTT_KEEPALIVE";
 
 do_pub0() {
   echo "do_pub0";

@@ -10,3 +10,4 @@ MQTT_TOPIC="test/1234";
 
 # COUNT="9999";
 # INTERVAL="2";
+# KEEPALIVE="60";
