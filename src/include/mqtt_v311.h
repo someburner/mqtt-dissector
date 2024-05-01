@@ -5,32 +5,26 @@
 extern "C" {
 #endif
 
-
-#define MQTT_CTRL_TYPES_MAP(XX) \
-   XX(0,  INVALID     ) \
-   XX(1,  CONNECT     ) \
-   XX(2,  CONNACK     ) \
-   XX(3,  PUBLISH     ) \
-   XX(4,  PUBACK      ) \
-   XX(5,  PUBREC      ) \
-   XX(6,  PUBREL      ) \
-   XX(7,  PUBCOMP     ) \
-   XX(8,  SUBSCRIBE   ) \
-   XX(9,  SUBACK      ) \
-   XX(10, UNSUBSCRIBE ) \
-   XX(11, UNSUBACK    ) \
-   XX(12, PINGREQ     ) \
-   XX(13, PINGRESP    ) \
-   XX(14, DISCONNECT  )
-
-#define MQTT_CTRL_TYPES_MAX  15
-
 enum mqtt_ctrl_types
 {
-#define XX(num, unames) MQTT_CTRL_##unames = num,
-   MQTT_CTRL_TYPES_MAP(XX)
-#undef XX
+   MQTT_CTRL_INVALID     = 0,
+   MQTT_CTRL_CONNECT     = 1,
+   MQTT_CTRL_CONNACK     = 2,
+   MQTT_CTRL_PUBLISH     = 3,
+   MQTT_CTRL_PUBACK      = 4,
+   MQTT_CTRL_PUBREC      = 5,
+   MQTT_CTRL_PUBREL      = 6,
+   MQTT_CTRL_PUBCOMP     = 7,
+   MQTT_CTRL_SUBSCRIBE   = 8,
+   MQTT_CTRL_SUBACK      = 9,
+   MQTT_CTRL_UNSUBSCRIBE = 10,
+   MQTT_CTRL_UNSUBACK    = 11,
+   MQTT_CTRL_PINGREQ     = 12,
+   MQTT_CTRL_PINGRESP    = 13,
+   MQTT_CTRL_DISCONNECT  = 14
 };
+
+#define MQTT_CTRL_TYPES_MAX  15
 
 /* Section 2.3.1 pg 20 - Control Packets that contian a Packet Identifier */
 #define MQTT_CTRL_EXPECTS_ID (\

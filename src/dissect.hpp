@@ -29,11 +29,23 @@ private:
     uint64_t    _prev_client_secs, _prev_server_secs;
     uint64_t    _cur_client_secs, _cur_server_secs;
 
+    uint64_t    _prev_ping_secs, _cur_ping_secs;
+
 public:
     UserData() {
         _start_secs = 0;
+        _prev_ping_secs = 0;
     }
     ~UserData() { }
+
+    void SetPingSecs(uint64_t epoch) {
+        _prev_ping_secs = _cur_ping_secs;
+        _cur_ping_secs = epoch;
+    }
+
+    uint64_t GetPingDelta(void) {
+        return _cur_ping_secs - _prev_ping_secs;
+    }
 
     void SetStartSecs(uint64_t epoch) {
         if (_start_secs == 0) {

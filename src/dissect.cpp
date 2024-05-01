@@ -265,6 +265,11 @@ bool handle_mqtt_pkt(UserData& userData, bool isClient, uint8_t * pktbuf, size_t
         printf(" [+%" PRIu64 "s]", userData.GetPktDelta(isClient));
     }
 
+    if (pkt.type() == MQTT_CTRL_PINGREQ) {
+        userData.SetPingSecs(epoch_secs_now());
+        printf(" [+%" PRIu64 "]", userData.GetPingDelta());
+    }
+
     printf("\n");
 
     return true;

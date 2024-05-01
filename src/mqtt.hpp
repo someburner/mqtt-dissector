@@ -90,15 +90,24 @@ inline void mqtt_dump_ctrl_connect_header(OnConnectFixedData_t& ci)
     );
 }
 
-const char * mqtt_get_type_str(uint8_t t) {
-    switch ( t )
-    {
-    #define XX(num, unames) case MQTT_CTRL_##unames: { \
-            return #unames; \
-        }
-        break;
-    MQTT_CTRL_TYPES_MAP(XX)
-    #undef XX
+const char * mqtt_get_type_str(uint8_t t)
+{
+    switch (t) {
+        case MQTT_CTRL_INVALID:     return "INVALID";
+        case MQTT_CTRL_CONNECT:     return "CONNECT";
+        case MQTT_CTRL_CONNACK:     return "CONNACK";
+        case MQTT_CTRL_PUBLISH:     return "PUBLISH";
+        case MQTT_CTRL_PUBACK:      return "PUBACK";
+        case MQTT_CTRL_PUBREC:      return "PUBREC";
+        case MQTT_CTRL_PUBREL:      return "PUBREL";
+        case MQTT_CTRL_PUBCOMP:     return "PUBCOMP";
+        case MQTT_CTRL_SUBSCRIBE:   return "SUBSCRIBE";
+        case MQTT_CTRL_SUBACK:      return "SUBACK";
+        case MQTT_CTRL_UNSUBSCRIBE: return "UNSUBSCRIBE";
+        case MQTT_CTRL_UNSUBACK:    return "UNSUBACK";
+        case MQTT_CTRL_PINGREQ:     return "PINGREQ";
+        case MQTT_CTRL_PINGRESP:    return "PINGRESP";
+        case MQTT_CTRL_DISCONNECT:  return "DISCONNECT";
     }
     return "N/A";
 }
