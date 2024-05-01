@@ -40,8 +40,14 @@ else
 BASEFLAGS +=-DLOGURU_EN=0
 endif
 
+### Version Info
+VERSION_DEFS = \
+	-DBUILD_DATE="$(shell date '+%F %T';)" \
+	-DGIT_SHORT_SHA=$(shell git rev-parse HEAD | cut -b -7) \
+	-DGIT_BRANCH=$(shell git rev-parse --symbolic-full-name --abbrev-ref HEAD;)
+
 ### Collect
-DEFINES   := $(LOCAL_DEFINES)
+DEFINES   := $(LOCAL_DEFINES) $(VERSION_DEFS)
 CXXFLAGS  := $(BASEFLAGS) $(CXX_EXTRA)
 CPPSRCS   = $(wildcard src/*.cpp) $(wildcard src/*.cpp)
 CPPOBJS   = $(patsubst src/%.cpp,%.o, $(CPPSRCS))

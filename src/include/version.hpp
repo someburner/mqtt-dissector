@@ -4,13 +4,17 @@
 #define STRINGIZE( STR ) #STR
 #define MAKE_STRING( STR ) STRINGIZE( STR )
 
-#define V_MAJOR 0
-#define V_MINOR 0
-#define V_SUB   2
-
-inline const char * get_version(void) {
-    return "v" MAKE_STRING(V_MAJOR) "." MAKE_STRING(V_MINOR) "." MAKE_STRING(V_SUB) "";
+#if defined(GIT_BRANCH) && defined(GIT_SHORT_SHA) && defined(BUILD_DATE)
+inline const char * get_version(void)
+{
+    return "mqtt-dissector: " MAKE_STRING(GIT_BRANCH) "/" MAKE_STRING(GIT_SHORT_SHA) " (built " MAKE_STRING(BUILD_DATE) ")";
 }
+#else
+inline const char * get_version(void)
+{
+    return "mqtt-dissector: unknown version";
+}
+#endif
 
 inline const char * get_pcap_version(void) {
     extern char pcap_version[];

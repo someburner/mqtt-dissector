@@ -15,6 +15,8 @@
 #include "include/version.hpp"
 
 int main(int argc, char* argv[]) {
+    std::cout << get_version() << "\n";
+
     if (getuid() != 0) {
         std::cout << "Must be root." << std::endl;
         exit(1);
@@ -86,7 +88,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     if (print_version) {
-        std::cout << "Version: " << get_version() << "\n";
         std::cout << "   [ libpcap-" << get_pcap_version() << " ]\n";
         std::cout << "   [ libtins-" << get_tins_version() << " ]\n";
         return 0;
